@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Yemek Tarifi - Binlerce lezzetli tarif, malzeme listesi ve alışveriş listesi yönetimi">
+    <title>Yemek Tarifi | Lezzetli Dünya</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav class="navbar" id="navbar">
+    <div class="nav-container">
+        <a href="index.html" class="nav-logo">
+            <span class="logo-icon">🍽️</span>
+            <span class="logo-text">Yemek<strong>Tarifi</strong></span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html" class="nav-link active">Ana Sayfa</a></li>
+            <li><a href="tarif-yonetim.html" class="nav-link">Tarif Yönetimi</a></li>
+            <li><a href="tarif-yonetim.html#alisveris" class="nav-link">Alışveriş Listesi</a></li>
+        </ul>
+        <button class="btn-primary" onclick="window.location.href='tarif-yonetim.html'">+ Yeni Tarif</button>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+        <span class="hero-badge">🌟 500+ Lezzetli Tarif</span>
+        <h1 class="hero-title">Mutfağınızda<br><span class="gradient-text">Sanat Yaratın</span></h1>
+        <p class="hero-subtitle">Türk mutfağının eşsiz lezzetlerini keşfedin. Adım adım tarifler, malzeme listeleri ve alışveriş planlaması.</p>
+        <div class="hero-actions">
+            <button class="btn-hero-primary" onclick="document.getElementById('recipes-section').scrollIntoView({behavior:'smooth'})">Tarifleri Keşfet</button>
+            <button class="btn-hero-secondary" onclick="window.location.href='tarif-yonetim.html'">Tarif Ekle</button>
+        </div>
+        <div class="hero-stats">
+            <div class="stat"><strong>500+</strong><span>Tarif</span></div>
+            <div class="stat-divider"></div>
+            <div class="stat"><strong>8</strong><span>Kategori</span></div>
+            <div class="stat-divider"></div>
+            <div class="stat"><strong>200+</strong><span>Malzeme</span></div>
+        </div>
+    </div>
+    <div class="hero-visual">
+        <div class="floating-card fc1"><span>🍲</span><p>Mercimek Çorbası</p><small>35 dk</small></div>
+        <div class="floating-card fc2"><span>🥩</span><p>Tavuk Sote</p><small>35 dk</small></div>
+        <div class="floating-card fc3"><span>🍰</span><p>Cheesecake</p><small>90 dk</small></div>
+    </div>
+</section>
+
+<section class="search-section">
+    <div class="container">
+        <div class="search-box">
+            <div class="search-input-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Tarif ara... (örn: mercimek, tavuk, baklava)" oninput="filterRecipes()">
+                <button class="search-clear" onclick="document.getElementById('searchInput').value='';filterRecipes()">✕</button>
+            </div>
+        </div>
+        <div class="filter-tabs" id="filterTabs">
+            <button class="filter-tab active" onclick="filterCategory('all',this)">Tümü</button>
+            <button class="filter-tab" onclick="filterCategory('Çorbalar',this)">🍲 Çorbalar</button>
+            <button class="filter-tab" onclick="filterCategory('Et Yemekleri',this)">🥩 Et</button>
+            <button class="filter-tab" onclick="filterCategory('Sebze Yemekleri',this)">🥗 Sebze</button>
+            <button class="filter-tab" onclick="filterCategory('Tatlılar',this)">🍰 Tatlılar</button>
+            <button class="filter-tab" onclick="filterCategory('Kahvaltılık',this)">🍳 Kahvaltı</button>
+            <button class="filter-tab" onclick="filterCategory('Makarna',this)">🍝 Makarna</button>
+            <button class="filter-tab" onclick="filterCategory('Salata',this)">🥙 Salata</button>
+        </div>
+        <div class="sort-bar">
+            <span class="sort-label">Sırala:</span>
+            <select id="sortSelect" onchange="sortRecipes(this.value)">
+                <option value="newest">En Yeni</option>
+                <option value="fastest">En Hızlı</option>
+                <option value="easy">En Kolay</option>
+                <option value="name">A-Z</option>
+            </select>
+            <span class="results-count" id="resultsCount"></span>
+        </div>
+    </div>
+</section>
+
+<section class="recipes-section" id="recipes-section">
+    <div class="container">
+        <div class="recipe-grid" id="recipeGrid"></div>
+        <div class="empty-state" id="emptyState" style="display:none">
+            <div class="empty-icon">🔍</div>
+            <h3>Tarif bulunamadı</h3>
+            <p>Farklı bir arama terimi deneyin.</p>
+        </div>
+    </div>
+</section>
+
+<div class="modal-overlay" id="recipeModal" onclick="if(event.target===this)closeModal()">
+    <div class="modal" role="dialog" aria-modal="true">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-content" id="modalContent"></div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="footer-logo">🍽️ YemekTarifi</div>
+                <p>Türk mutfağının zengin lezzetlerini modern bir platformda buluşturuyoruz.</p>
+                <div class="tech-badges">
+                    <span class="tech-badge jsp">JSP + PostgreSQL</span>
+                    <span class="tech-badge asp">ASP + MSSQL</span>
+                    <span class="tech-badge php">PHP + MySQL</span>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h4>Hızlı Erişim</h4>
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="tarif-yonetim.html">Tarif Yönetimi</a></li>
+                    <li><a href="tarif-yonetim.html#alisveris">Alışveriş Listesi</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Veritabanları</h4>
+                <ul>
+                    <li><a href="#">PostgreSQL (JSP)</a></li>
+                    <li><a href="#">MS SQL Server (ASP)</a></li>
+                    <li><a href="#">MySQL (PHP)</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 YemekTarifi — JSP | ASP | PHP</p>
+        </div>
+    </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

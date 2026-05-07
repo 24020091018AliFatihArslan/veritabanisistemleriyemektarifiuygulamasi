@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Yemek Tarifi Yönetimi - Yeni tarif ekle, düzenle, sil ve alışveriş listesi oluştur">
+    <title>Tarif Yönetimi | YemekTarifi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/yonetim.css">
+</head>
+<body class="yonetim-page">
+
+<nav class="navbar" id="navbar">
+    <div class="nav-container">
+        <a href="index.html" class="nav-logo">
+            <span class="logo-icon">🍽️</span>
+            <span class="logo-text">Yemek<strong>Tarifi</strong></span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html" class="nav-link">Ana Sayfa</a></li>
+            <li><a href="tarif-yonetim.html" class="nav-link active">Tarif Yönetimi</a></li>
+            <li><a href="tarif-yonetim.html#alisveris" class="nav-link">Alışveriş Listesi</a></li>
+        </ul>
+        <button class="btn-primary" onclick="showTab('yeni-tarif')">+ Yeni Tarif</button>
+    </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+    <div class="container">
+        <h1>Tarif Yönetimi</h1>
+        <p>Tariflerinizi ekleyin, düzenleyin ve alışveriş listelerinizi oluşturun</p>
+    </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="mgmt-layout container">
+
+    <!-- SIDEBAR TABS -->
+    <aside class="mgmt-sidebar">
+        <nav class="sidebar-nav">
+            <button class="sidebar-btn active" id="tab-tarif-listesi" onclick="showTab('tarif-listesi')">
+                <span class="sb-icon">📋</span>
+                <span>Tarif Listesi</span>
+            </button>
+            <button class="sidebar-btn" id="tab-yeni-tarif" onclick="showTab('yeni-tarif')">
+                <span class="sb-icon">➕</span>
+                <span>Yeni Tarif</span>
+            </button>
+            <button class="sidebar-btn" id="tab-malzeme-secme" onclick="showTab('malzeme-secme')">
+                <span class="sb-icon">🧺</span>
+                <span>Malzeme Seçme</span>
+            </button>
+            <button class="sidebar-btn" id="tab-tarif-detay" onclick="showTab('tarif-detay')">
+                <span class="sb-icon">📖</span>
+                <span>Tarif Detay</span>
+            </button>
+            <button class="sidebar-btn" id="tab-alisveris" onclick="showTab('alisveris')" id="alisveris-tab">
+                <span class="sb-icon">🛒</span>
+                <span>Alışveriş Listesi</span>
+            </button>
+        </nav>
+        <div class="sidebar-stats">
+            <div class="ss-item"><span id="ss-count">0</span><small>Tarif</small></div>
+            <div class="ss-item"><span id="ss-malzeme">20</span><small>Malzeme</small></div>
+            <div class="ss-item"><span id="ss-liste">0</span><small>Alışveriş</small></div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT PANELS -->
+    <main class="mgmt-main">
+
+        <!-- PANEL: TARİF LİSTESİ -->
+        <div class="mgmt-panel active" id="panel-tarif-listesi">
+            <div class="panel-header">
+                <h2>📋 Tarif Listesi</h2>
+                <div class="panel-actions">
+                    <input type="text" id="listSearch" placeholder="Ara..." oninput="filterList()" class="input-sm">
+                    <button class="btn-primary btn-sm" onclick="showTab('yeni-tarif')">+ Yeni Tarif</button>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table class="recipe-table" id="recipeTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Tarif Adı</th>
+                            <th>Kategori</th>
+                            <th>Süre</th>
+                            <th>Zorluk</th>
+                            <th>Porsiyon</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recipeTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PANEL: YENİ TARİF / DÜZENLE (CRUD FORM) -->
+        <div class="mgmt-panel" id="panel-yeni-tarif">
+            <div class="panel-header">
+                <h2 id="formTitle">➕ Yeni Tarif Ekle</h2>
+                <div class="form-mode-badge" id="formModeBadge">EKLE</div>
+            </div>
+            <form class="tarif-form" id="tarifForm" onsubmit="saveRecipe(event)">
+                <input type="hidden" id="editId" value="">
+                <div class="form-grid">
+                    <!-- SOL KOLON -->
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="tarifAdi">Tarif Adı <span class="req">*</span></label>
+                            <input type="text" id="tarifAdi" placeholder="örn: Mercimek Çorbası" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="kategoriId">Kategori <span class="req">*</span></label>
+                            <select id="kategoriId" required>
+                                <option value="">-- Kategori Seçin --</option>
+                                <option value="1">🍲 Çorbalar</option>
+                                <option value="2">🥩 Et Yemekleri</option>
+                                <option value="3">🥗 Sebze Yemekleri</option>
+                                <option value="4">🍰 Tatlılar</option>
+                                <option value="5">🍳 Kahvaltılık</option>
+                                <option value="6">🍝 Makarna</option>
+                                <option value="7">🥙 Salata</option>
+                                <option value="8">🥤 İçecekler</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="hazirlikSuresi">Hazırlık (dk)</label>
+                                <input type="number" id="hazirlikSuresi" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="pisirmeSuresi">Pişirme (dk)</label>
+                                <input type="number" id="pisirmeSuresi" min="0" value="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="porsiyon">Porsiyon</label>
+                                <input type="number" id="porsiyon" min="1" value="4">
+                            </div>
+                            <div class="form-group">
+                                <label for="zorlukDerecesi">Zorluk</label>
+                                <select id="zorlukDerecesi">
+                                    <option value="Kolay">Kolay</option>
+                                    <option value="Orta" selected>Orta</option>
+                                    <option value="Zor">Zor</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="aciklama">Açıklama</label>
+                            <textarea id="aciklama" rows="3" placeholder="Tarif hakkında kısa bir açıklama..."></textarea>
+                        </div>
+                    </div>
+                    <!-- SAĞ KOLON -->
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Fotoğraf</label>
+                            <div class="photo-upload" id="photoUpload" onclick="document.getElementById('fotografInput').click()">
+                                <div class="photo-placeholder" id="photoPlaceholder">
+                                    <span>📷</span>
+                                    <p>Fotoğraf seçmek için tıklayın</p>
+                                    <small>JPG, PNG, WEBP (max 5MB)</small>
+                                </div>
+                                <img id="photoPreview" src="" alt="Tarif fotoğrafı" style="display:none">
+                            </div>
+                            <input type="file" id="fotografInput" accept="image/*" style="display:none" onchange="previewPhoto(event)">
+                        </div>
+                        <div class="form-group">
+                            <label>Malzemeler</label>
+                            <div class="ingredient-adder">
+                                <select id="malzemeSelect" class="input-flex">
+                                    <option value="">-- Malzeme Seçin --</option>
+                                </select>
+                                <input type="number" id="malzemeMiktar" placeholder="Miktar" min="0" step="0.5" class="input-sm2">
+                                <select id="malzemeBirim" class="input-sm2">
+                                    <option value="">Birim</option>
+                                </select>
+                                <button type="button" class="btn-add-ing" onclick="addIngredient()">+ Ekle</button>
+                            </div>
+                            <div class="ingredient-list" id="ingredientList">
+                                <div class="ing-empty">Henüz malzeme eklenmedi</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- TALİMATLAR -->
+                <div class="form-group full-width">
+                    <label for="talimatlar">Yapılış Talimatları</label>
+                    <div class="steps-builder" id="stepsBuilder">
+                        <div class="steps-list" id="stepsList"></div>
+                        <div class="step-adder">
+                            <textarea id="newStepText" rows="2" placeholder="Yeni adım ekleyin..."></textarea>
+                            <button type="button" class="btn-add-step" onclick="addStep()">+ Adım Ekle</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="resetForm()">🔄 Temizle</button>
+                    <button type="button" class="btn-danger" id="deleteBtn" onclick="deleteCurrentRecipe()" style="display:none">🗑️ Sil</button>
+                    <button type="submit" class="btn-primary" id="saveBtn">💾 Kaydet</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- PANEL: MALZEME SEÇME -->
+        <div class="mgmt-panel" id="panel-malzeme-secme">
+            <div class="panel-header">
+                <h2>🧺 Malzeme Seçme</h2>
+                <button class="btn-primary btn-sm" onclick="showAddMalzemeModal()">+ Yeni Malzeme</button>
+            </div>
+            <div class="malzeme-filter">
+                <input type="text" id="malzemeSearch" placeholder="Malzeme ara..." oninput="filterMalzeme()" class="input-full">
+                <div class="malzeme-category-tabs" id="malzemeCatTabs">
+                    <button class="mcat-tab active" onclick="filterMalzemeKat('all',this)">Tümü</button>
+                    <button class="mcat-tab" onclick="filterMalzemeKat('Kuru Malzeme',this)">Kuru</button>
+                    <button class="mcat-tab" onclick="filterMalzemeKat('Sebze',this)">Sebze</button>
+                    <button class="mcat-tab" onclick="filterMalzemeKat('Et',this)">Et</button>
+                    <button class="mcat-tab" onclick="filterMalzemeKat('Süt Ürünleri',this)">Süt</button>
+                    <button class="mcat-tab" onclick="filterMalzemeKat('Yağlar',this)">Yağ</button>
+                    <button class="mcat-tab" onclick="filterMalzemeKat('Ot',this)">Ot</button>
+                    <button class="mcat-tab" onclick="filterMalzemeKat('Tahıl',this)">Tahıl</button>
+                </div>
+            </div>
+            <div class="malzeme-grid" id="malzemeGrid"></div>
+
+            <!-- Malzeme Ekleme Modalı -->
+            <div class="inline-modal" id="addMalzemeModal" style="display:none">
+                <div class="inline-modal-content">
+                    <h3>Yeni Malzeme Ekle</h3>
+                    <div class="form-group">
+                        <label>Malzeme Adı</label>
+                        <input type="text" id="newMalzemeAdi" placeholder="örn: Kimyon">
+                    </div>
+                    <div class="form-group">
+                        <label>Kategori</label>
+                        <select id="newMalzemeKat">
+                            <option>Kuru Malzeme</option>
+                            <option>Sebze</option>
+                            <option>Et</option>
+                            <option>Süt Ürünleri</option>
+                            <option>Yağlar</option>
+                            <option>Ot</option>
+                            <option>Tahıl</option>
+                            <option>Konserve</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Varsayılan Birim</label>
+                        <select id="newMalzemeBirim"></select>
+                    </div>
+                    <div class="inline-modal-actions">
+                        <button class="btn-secondary" onclick="hideAddMalzemeModal()">İptal</button>
+                        <button class="btn-primary" onclick="saveMalzeme()">Kaydet</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL: TARİF DETAY -->
+        <div class="mgmt-panel" id="panel-tarif-detay">
+            <div class="panel-header">
+                <h2>📖 Tarif Detay</h2>
+            </div>
+            <div class="detail-select">
+                <label>Tarif seçin:</label>
+                <select id="detayTarifSelect" onchange="loadDetailView(this.value)">
+                    <option value="">-- Tarif Seçin --</option>
+                </select>
+            </div>
+            <div class="detail-view" id="detailView">
+                <div class="detail-empty">
+                    <span>📖</span>
+                    <p>Detayını görüntülemek istediğiniz tarifi seçin.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL: ALIŞVERİŞ LİSTESİ -->
+        <div class="mgmt-panel" id="panel-alisveris">
+            <div class="panel-header">
+                <h2>🛒 Alışveriş Listesi</h2>
+                <button class="btn-primary btn-sm" onclick="createShoppingList()">+ Yeni Liste</button>
+            </div>
+            <div class="shopping-layout">
+                <div class="shopping-left">
+                    <h3>Tariflere Göre Liste Oluştur</h3>
+                    <div class="recipe-picker" id="recipePicker"></div>
+                    <button class="btn-accent full-btn" onclick="generateShoppingList()">🛒 Alışveriş Listesi Oluştur</button>
+                </div>
+                <div class="shopping-right">
+                    <div class="shopping-list-header">
+                        <h3 id="shoppingListTitle">Alışveriş Listesi</h3>
+                        <div class="list-actions">
+                            <button class="btn-sm btn-secondary" onclick="checkAll()">✓ Tümünü İşaretle</button>
+                            <button class="btn-sm btn-secondary" onclick="printList()">🖨️ Yazdır</button>
+                            <button class="btn-sm btn-danger" onclick="clearShoppingList()">🗑️ Temizle</button>
+                        </div>
+                    </div>
+                    <div class="shopping-items" id="shoppingItems">
+                        <div class="shopping-empty">
+                            <span>🛒</span>
+                            <p>Sol taraftan tarif seçerek alışveriş listesi oluşturun.</p>
+                        </div>
+                    </div>
+                    <div class="shopping-summary" id="shoppingSummary" style="display:none">
+                        <span id="checkedCount">0</span> / <span id="totalCount">0</span> ürün tamamlandı
+                        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer class="footer footer-sm">
+    <div class="container">
+        <div class="footer-bottom">
+            <p>© 2025 YemekTarifi — JSP + PostgreSQL | ASP + MSSQL | PHP + MySQL</p>
+        </div>
+    </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/yonetim.js"></script>
+</body>
+</html>
